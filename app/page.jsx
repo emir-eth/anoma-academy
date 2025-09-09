@@ -6,6 +6,7 @@ export const dynamic = 'force-dynamic';
 import { useMemo, useEffect, useState } from 'react';
 import Link from 'next/link';
 import LessonCard from '@/components/LessonCard';
+import ConfirmModal from '@/components/ConfirmModal';
 import { dict } from '@/app/i18n/dict';
 import { content } from '@/app/i18n/content';
 import { useLanguage } from '@/app/providers/LanguageProvider';
@@ -19,6 +20,8 @@ export default function HomePage() {
 
   // Ders tamamlama durumları (dil bazlı yerel kayıt)
   const [done, setDone] = useState({});
+  const [showResetModal, setShowResetModal] = useState(false);
+  
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const data = localStorage.getItem('anoma_academy_done_' + lang);
@@ -32,17 +35,18 @@ export default function HomePage() {
   );
 
   // İlerlemeyi sıfırla (sadece mevcut dil için)
-  function resetProgress() {
-    if (
-      confirm(
-        lang === 'tr'
-          ? 'İlerlemeni sıfırlamak istiyor musun?'
-          : 'Reset your progress?'
-      )
-    ) {
-      localStorage.removeItem('anoma_academy_done_' + lang);
-      setDone({});
-    }
+  function handleResetClick() {
+    setShowResetModal(true);
+  }
+
+  function confirmReset() {
+    localStorage.removeItem('anoma_academy_done_' + lang);
+    setDone({});
+    setShowResetModal(false);
+  }
+
+  function cancelReset() {
+    setShowResetModal(false);
   }
 
   function scrollToCurriculum() {
@@ -76,7 +80,7 @@ export default function HomePage() {
             </button>
 
             {hasProgress && (
-              <button onClick={resetProgress} className="btn btn-ghost">
+              <button onClick={handleResetClick} className="btn btn-ghost">
                 {lang === 'tr' ? 'İlerlemeni sıfırla' : 'Reset progress'}
               </button>
             )}
@@ -103,6 +107,20 @@ export default function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* Reset Progress Modal */}
+      <ConfirmModal
+        isOpen={showResetModal}
+        onClose={cancelReset}
+        onConfirm={confirmReset}
+        title={lang === 'tr' ? 'İlerlemeyi Sıfırla' : 'Reset Progress'}
+        message={lang === 'tr' 
+          ? 'Tüm ders ilerlemenizi sıfırlamak istediğinizden emin misiniz? Bu işlem geri alınamaz.'
+          : 'Are you sure you want to reset all your lesson progress? This action cannot be undone.'
+        }
+        confirmText={lang === 'tr' ? 'Evet, Sıfırla' : 'Yes, Reset'}
+        cancelText={lang === 'tr' ? 'İptal' : 'Cancel'}
+      />
     </main>
   );
 }
