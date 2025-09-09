@@ -1,30 +1,95 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function Quiz({ items, onFinish, t }){
+export default function Quiz({ items, onFinish, t, lessonSlug, lang, onQuizComplete }){
   const [i, setI] = useState(0);
   const [sel, setSel] = useState(null);
   const [status, setStatus] = useState('idle');
+  const [savedAnswers, setSavedAnswers] = useState({});
   const router = useRouter();
   const cur = items[i];
 
+  // Kaydedilmiş cevapları yükle
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const key = `anoma_academy_quiz_${lessonSlug}_${lang}`;
+    const saved = localStorage.getItem(key);
+    if (saved) {
+      setSavedAnswers(JSON.parse(saved));
+    }
+  }, [lessonSlug, lang]);
+
+  // Mevcut sorunun cevabını yükle
+  useEffect(() => {
+    if (savedAnswers[i] !== undefined) {
+      setSel(savedAnswers[i].answer);
+      setStatus(savedAnswers[i].status);
+    }
+  }, [i, savedAnswers]);
+
   function check(){
     if (sel===null) { return; }
-    if (sel === cur.answer) setStatus('ok'); else setStatus('bad');
+    const isCorrect = sel === cur.answer;
+    const newStatus = isCorrect ? 'ok' : 'bad';
+    setStatus(newStatus);
+    
+    // Cevabı kaydet
+    const newSavedAnswers = {
+      ...savedAnswers,
+      [i]: { answer: sel, status: newStatus }
+    };
+    setSavedAnswers(newSavedAnswers);
+    
+    if (typeof window !== 'undefined') {
+      const key = `anoma_academy_quiz_${lessonSlug}_${lang}`;
+      localStorage.setItem(key, JSON.stringify(newSavedAnswers));
+    }
   }
+  
   function next(){
     if (i === items.length - 1) {
       onFinish();
       router.push('/');
     }
-    else { setI(i+1); setSel(null); setStatus('idle'); }
+    else { 
+      setI(i+1); 
+      // Yeni soru için state'i sıfırla (kaydedilmiş cevap varsa useEffect'te yüklenecek)
+      if (savedAnswers[i+1] === undefined) {
+        setSel(null); 
+        setStatus('idle');
+      }
+    }
   }
+
+  // Tamamlanan soru sayısını hesapla
+  const completedQuestions = Object.keys(savedAnswers).length;
+  const progressPercentage = items.length > 0 ? Math.round((completedQuestions / items.length) * 100) : 0;
+  
+  // Quiz tamamlandığında onQuizComplete'i çağır
+  useEffect(() => {
+    if (completedQuestions === items.length && items.length > 0) {
+      if (onQuizComplete) {
+        onQuizComplete();
+      }
+      // Ana sayfayı da güncellemek için custom event tetikle (debounced)
+      if (typeof window !== 'undefined') {
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('quizComplete'));
+        }, 50);
+      }
+    }
+  }, [completedQuestions, items.length]); // onQuizComplete'i dependency'den çıkardık
 
   return (
     <div className="card p-5 space-y-3">
-      <div className="text-sm text-zinc-400 flex items-center justify-between"><span>Quiz {i+1}/{items.length}</span><span>{Math.round(((i+1)/items.length)*100)}%</span></div>
-      <div className="w-full bg-zinc-800/60 rounded-full overflow-hidden"><div className="progress" style={{width: `${((i+1)/items.length)*100}%`}} /></div>
+      <div className="text-sm text-zinc-400 flex items-center justify-between">
+        <span>Quiz {i+1}/{items.length}</span>
+        <span>{progressPercentage}%</span>
+      </div>
+      <div className="w-full bg-zinc-800/60 rounded-full overflow-hidden">
+        <div className="progress" style={{width: `${progressPercentage}%`}} />
+      </div>
       <div className="mt-2 font-semibold">{cur.q}</div>
 
       <div className="mt-3 grid gap-2">

@@ -62,3 +62,60 @@ input[type="radio"] { accent-color: #ef4444; }
   border-radius: 9999px;
   background: linear-gradient(to right, rgba(244,63,94,.7), rgba(239,68,68,.7));
 }
+
+/* Konfeti Animasyonları */
+@keyframes confetti {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+@keyframes confetti-big {
+  0% {
+    transform: translateY(-100vh) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(50vh) rotate(360deg) scale(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg) scale(0.8);
+    opacity: 0;
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0.3) rotate(-10deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05) rotate(5deg);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(0.95) rotate(-2deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.animate-confetti {
+  animation: confetti linear forwards;
+}
+
+.animate-confetti-big {
+  animation: confetti-big linear forwards;
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.6s ease-out forwards;
+}
