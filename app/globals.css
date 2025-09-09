@@ -1,0 +1,64 @@
+html{scroll-behavior:smooth}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+
+body { @apply bg-black text-zinc-100; background: radial-gradient(1200px 600px at 80% -10%, rgba(239,68,68,0.25), transparent 60%), linear-gradient(to bottom, #0a0a0a, #000); }
+.container { @apply mx-auto max-w-6xl px-6; }
+.card { @apply rounded-2xl border border-zinc-800/60 bg-zinc-900/40 backdrop-blur; }
+.btn { @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-semibold transition; }
+.btn-primary { @apply bg-anoma-red hover:bg-anoma-red2 text-white; }
+.btn-ghost { @apply bg-zinc-800 hover:bg-zinc-700 text-zinc-100; }
+.badge { @apply inline-flex items-center rounded-lg bg-zinc-800 px-2 py-1 text-xs; }
+.prose { @apply leading-relaxed text-zinc-200; }
+a { @apply hover:text-white; }
+input[type="radio"] { accent-color: #ef4444; }
+
+
+.card-hero{@apply rounded-3xl border border-white/10 bg-white/5 shadow-[0_20px_80px_-40px_rgba(244,63,94,0.35)] backdrop-blur;}
+.hero{
+  background:
+    radial-gradient(1400px 800px at 70% -10%, rgba(239,68,68,0.28), transparent 72%),
+    radial-gradient(900px 600px at 10% 0%, rgba(244,63,94,0.18), transparent 65%),
+    linear-gradient(to bottom, #0a0a0a, #000);
+}
+#curriculum{ scroll-margin-top: 100px; }
+
+
+@keyframes gradientShift {
+  0% { transform: translate3d(0,0,0) scale(1); opacity:.9; }
+  50% { transform: translate3d(-2%, -1%, 0) scale(1.02); opacity:.95; }
+  100% { transform: translate3d(0,0,0) scale(1); opacity:.9; }
+}
+
+.hero{
+  position: relative;
+  isolation: isolate;
+}
+.hero::before{
+  content:"";
+  position:absolute; inset:-10% -20% auto -20%;
+  height:60vh;
+  background:
+    radial-gradient(60% 60% at 70% 20%, rgba(239,68,68,.30), transparent 65%),
+    radial-gradient(55% 55% at 20% 10%, rgba(244,63,94,.22), transparent 60%);
+  filter: blur(40px);
+  animation: gradientShift 18s ease-in-out infinite;
+  z-index:-1;
+}
+
+.card { @apply rounded-3xl border border-zinc-800/60 bg-zinc-900/40 backdrop-blur shadow-[0_20px_80px_-40px_rgba(244,63,94,0.25)]; }
+.card-hover { @apply transition transform hover:scale-[1.01] hover:border-anoma-red/60 hover:shadow-[0_30px_100px_-45px_rgba(244,63,94,0.35)]; }
+.btn { @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-semibold transition; }
+.btn-primary { @apply bg-anoma-red hover:bg-anoma-red2 text-white shadow-[0_10px_30px_-10px_rgba(244,63,94,0.5)]; }
+.btn-ghost { @apply bg-zinc-800/80 hover:bg-zinc-700 text-zinc-100; }
+
+.footer-grad { background: linear-gradient(180deg, transparent, rgba(244,63,94,0.06)); }
+
+.progress {
+  height: 8px;
+  border-radius: 9999px;
+  background: linear-gradient(to right, rgba(244,63,94,.7), rgba(239,68,68,.7));
+}
